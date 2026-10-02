@@ -65,6 +65,18 @@ Each run simulates 60 chromosomes of 50 Mb, giving 3 Gb of sequence, and evaluat
 2. `RFMix + DAIseg.simple`
 3. `DAIseg.mexicans`
 
+
+## Local paths
+
+Before running the benchmark, update the local paths to DAIseg and RFMix in the corresponding wrapper scripts.
+
+In particular, check:
+
+- the path to the DAIseg executable/script in `run_daiseg_simple.py`;
+- the path to the RFMix binary used by the RFMix wrapper.
+
+These paths are system-specific and must be set according to your local installation.
+
 ## Scripts
 
 `test.3.methods.sh` runs the full comparison pipeline for one simulation replicate.
