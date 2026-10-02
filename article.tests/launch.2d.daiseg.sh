@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-for i in $(seq 7 50); do
+for i in $(seq 1 50); do
   BASE_SEED=$((123456789 + (i - 1) * 1000000))
   SIM_NAME="2d.daiseg.seed${i}"
 
