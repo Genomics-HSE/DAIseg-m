@@ -2,6 +2,29 @@
 Highly accurate method for detecting archaic segments in the modern admixed genomes 
 
 
+## Requirements
+
+DAIseg-m requires Python 3 and the following Python packages:
+
+- `numpy`
+- `pandas`
+- `scipy`
+- `numba`
+- `pysam`
+
+The preprocessing pipeline additionally requires:
+
+- `bcftools`
+- `jq`
+- `bash`
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Genomics-HSE/DAIseg.mexicans.git
+cd DAIseg.mexicans
+
+
 ![Demography](https://github.com/Genomics-HSE/DAIseg.mexicans/blob/main/Mexicans.svg)
 
 
