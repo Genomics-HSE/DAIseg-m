@@ -23,7 +23,7 @@ Clone the repository:
 ```bash
 git clone https://github.com/Genomics-HSE/DAIseg.mexicans.git
 cd DAIseg.mexicans
-
+```
 
 ![Demography](https://github.com/Genomics-HSE/DAIseg.mexicans/blob/main/Mexicans.svg)
 
