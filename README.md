@@ -212,4 +212,19 @@ where .json is configuration file.
 
 
 
+
+## Reproducible simulation analysis
+
+The [`article.tests/`](article.tests/) directory contains the simulated-data analysis used to evaluate DAIseg-m in the manuscript.
+
+It includes the simulation inputs,  analysis scripts required to reproduce the benchmarking results reported in the article.
+
+Instructions for running the analysis are provided in `article.tests/README.md`.
+
+
+### Real-data analyses
+
+The real-data analysis directory contains the workflows used for the analyses of the 1000 Genomes data, including the ancestry-specific Neanderthal frequency comparison, candidate-region scans, and analyses of callability/threshold sensitivity.
+
+
 </details>
