@@ -1,20 +1,18 @@
-#!/usr/bin/env python3
 
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from analysis_utils import (
     STATE_ORDER,
-    load_tsv,
-    ensure_truth_columns,
-    ensure_pred_columns,
-    calculate_confusion_bp,
-    row_normalize,
-    collapse_to_binary,
     binary_metrics,
+    calculate_confusion_bp,
+    collapse_to_binary,
+    ensure_pred_columns,
+    ensure_truth_columns,
+    load_tsv,
 )
 
 
@@ -28,7 +26,9 @@ MODERN_REF = 250
 ND_REF = 3
 
 OUT_DIR = Path("length_bin_analysis.ref250.nd3")
-OUT_PDF = OUT_DIR / "length_bin_confusion.mean_across_runs.pdf"
+
+OUT_RECALL_PDF = OUT_DIR / "length_bin_recall.mean_across_runs.pdf"
+OUT_PRECISION_PDF = OUT_DIR / "length_bin_precision.mean_across_runs.pdf"
 
 LENGTH_BINS = [
     ("0_10kb", 0, 10_000),
@@ -63,6 +63,28 @@ def filter_truth_bin(
     ].copy()
 
 
+def row_normalize_nan(conf: np.ndarray) -> np.ndarray:
+    """Row-normalize while leaving undefined rows as NaN."""
+    row_sums = conf.sum(axis=1, keepdims=True)
+    return np.divide(
+        conf,
+        row_sums,
+        out=np.full(conf.shape, np.nan, dtype=float),
+        where=row_sums != 0,
+    )
+
+
+def column_normalize_nan(conf: np.ndarray) -> np.ndarray:
+    """Column-normalize while leaving undefined columns as NaN."""
+    col_sums = conf.sum(axis=0, keepdims=True)
+    return np.divide(
+        conf,
+        col_sums,
+        out=np.full(conf.shape, np.nan, dtype=float),
+        where=col_sums != 0,
+    )
+
+
 def format_bin_title(
     bin_name: str,
     recall: float,
@@ -75,9 +97,10 @@ def format_bin_title(
 
 
 def plot_results(
-    mean_rownorm_5x5: dict,
+    matrices: dict,
     bin_summary: dict,
     out_pdf: Path,
+    matrix_label: str,
 ) -> None:
     fig, axes = plt.subplots(3, 3, figsize=(13, 11))
 
@@ -85,7 +108,7 @@ def plot_results(
         axes.flat,
         LENGTH_BINS,
     ):
-        mat = mean_rownorm_5x5[bin_name]
+        mat = matrices[bin_name]
         stats = bin_summary[bin_name]
 
         ax.imshow(
@@ -108,8 +131,8 @@ def plot_results(
         ax.set_title(
             format_bin_title(
                 bin_name,
-                stats["binary_recall_mean"],
-                stats["binary_precision_mean"],
+                stats["binary_recall"],
+                stats["binary_precision"],
             ),
             fontsize=9,
         )
@@ -117,12 +140,17 @@ def plot_results(
         for i in range(mat.shape[0]):
             for j in range(mat.shape[1]):
                 val = mat[i, j]
-                color = "white" if val > 0.5 else "black"
+                if np.isnan(val):
+                    label = "NA"
+                    color = "black"
+                else:
+                    label = f"{val:.3f}"
+                    color = "white" if val > 0.5 else "black"
 
                 ax.text(
                     j,
                     i,
-                    f"{val:.3f}",
+                    label,
                     ha="center",
                     va="center",
                     fontsize=7,
@@ -131,8 +159,8 @@ def plot_results(
 
     fig.suptitle(
         (
-            "Length-stratified confusion analysis "
-            f"(pooled across runs; ref={MODERN_REF}, nd={ND_REF})"
+            f"Length-stratified {matrix_label} "
+            f"(mean across runs; ref={MODERN_REF}, nd={ND_REF})"
         ),
         y=0.98,
     )
@@ -152,7 +180,9 @@ def main() -> None:
         exist_ok=True,
     )
 
-    bin_conf5_row = {
+    # Each run is normalized separately. Undefined rows or columns are
+    # represented by NaN and therefore excluded from the across-run mean.
+    bin_conf5_raw = {
         name: []
         for name, _, _ in LENGTH_BINS
     }
@@ -219,11 +249,10 @@ def main() -> None:
             )
             conf2 = collapse_to_binary(conf5)
 
-            bin_conf5_row[bin_name].append(
-                conf5
+            bin_conf5_raw[bin_name].append(conf5)
+            bin_binary_metrics[bin_name].append(
+                binary_metrics(conf2)
             )
-
-            bin_binary_metrics[bin_name].append(conf2)
 
         completed_runs += 1
         print(f"[ok] run={run}")
@@ -232,43 +261,143 @@ def main() -> None:
         raise SystemExit("No completed runs found.")
 
     summary = {}
-    mean_rownorm_5x5 = {}
+    recall_matrices = {}
+    precision_matrices = {}
 
     for bin_name, _, _ in LENGTH_BINS:
-        row_stack = np.stack(
-            bin_conf5_row[bin_name],
+        recall_stack = np.stack(
+            [
+                row_normalize_nan(conf)
+                for conf in bin_conf5_raw[bin_name]
+            ],
             axis=0,
         )
 
-        binary_stack = np.stack(
-            bin_binary_metrics[bin_name],
+        precision_stack = np.stack(
+            [
+                column_normalize_nan(conf)
+                for conf in bin_conf5_raw[bin_name]
+            ],
             axis=0,
         )
 
-        binary_stats = binary_metrics(
-            binary_stack.sum(axis=0)
-        )
+        recalls = [
+            metrics["recall"]
+            for metrics in bin_binary_metrics[bin_name]
+        ]
+        precisions = [
+            metrics["precision"]
+            for metrics in bin_binary_metrics[bin_name]
+        ]
 
         summary[bin_name] = {
-            "binary_recall_mean": float(
-                binary_stats["recall"]
+            "binary_recall": float(
+                np.nanmean(recalls)
             ),
-            "binary_precision_mean": float(
-                binary_stats["precision"]
+            "binary_precision": float(
+                np.nanmean(precisions)
             ),
         }
 
-        mean_rownorm_5x5[bin_name] = (
-            row_normalize(row_stack.sum(axis=0))
+        # Rows are true states and columns are predicted states.
+        # Row-normalized diagonal entries are state-specific recall.
+        recall_matrices[bin_name] = np.nanmean(
+            recall_stack,
+            axis=0,
         )
 
-    plot_results(
-        mean_rownorm_5x5=mean_rownorm_5x5,
-        bin_summary=summary,
-        out_pdf=OUT_PDF,
+        # Column-normalized diagonal entries are state-specific precision.
+        precision_matrices[bin_name] = np.nanmean(
+            precision_stack,
+            axis=0,
+        )
+
+    # Save numerical source data underlying the length-bin figures.
+    states = ["EU", "ND_EU", "NA", "ND_NA", "AF"]
+
+    source_rows = []
+
+    for bin_name, start_bp, end_bp in LENGTH_BINS:
+        # Binary summary shown with the figures.
+        source_rows.append({
+            "length_bin": bin_name,
+            "start_bp": start_bp,
+            "end_bp": end_bp,
+            "matrix_type": "binary_summary",
+            "true_state": "",
+            "predicted_state": "",
+            "metric": "archaic_recall",
+            "value": summary[bin_name]["binary_recall"],
+        })
+
+        source_rows.append({
+            "length_bin": bin_name,
+            "start_bp": start_bp,
+            "end_bp": end_bp,
+            "matrix_type": "binary_summary",
+            "true_state": "",
+            "predicted_state": "",
+            "metric": "archaic_precision",
+            "value": summary[bin_name]["binary_precision"],
+        })
+
+        # Row-normalized matrix used in the recall figure.
+        mat = recall_matrices[bin_name]
+        for i, true_state in enumerate(states):
+            for j, pred_state in enumerate(states):
+                source_rows.append({
+                    "length_bin": bin_name,
+                    "start_bp": start_bp,
+                    "end_bp": end_bp,
+                    "matrix_type": "recall_matrix",
+                    "true_state": true_state,
+                    "predicted_state": pred_state,
+                    "metric": "value",
+                    "value": mat[i, j],
+                })
+
+        # Column-normalized matrix used in the precision figure.
+        mat = precision_matrices[bin_name]
+        for i, true_state in enumerate(states):
+            for j, pred_state in enumerate(states):
+                source_rows.append({
+                    "length_bin": bin_name,
+                    "start_bp": start_bp,
+                    "end_bp": end_bp,
+                    "matrix_type": "precision_matrix",
+                    "true_state": true_state,
+                    "predicted_state": pred_state,
+                    "metric": "value",
+                    "value": mat[i, j],
+                })
+
+    source_path = Path(__file__).resolve().parent / \
+        "S6_Data_length_bin_performance.tsv"
+
+    pd.DataFrame(source_rows).to_csv(
+        source_path,
+        sep="\t",
+        index=False,
     )
 
-    print(f"Saved plot to {OUT_PDF}")
+    print(f"Saved source data to {source_path}")
+
+    plot_results(
+        matrices=recall_matrices,
+        bin_summary=summary,
+        out_pdf=OUT_RECALL_PDF,
+        matrix_label="row-normalized confusion matrices",
+    )
+
+    plot_results(
+        matrices=precision_matrices,
+        bin_summary=summary,
+        out_pdf=OUT_PRECISION_PDF,
+        matrix_label="precision matrices",
+    )
+
+    print(f"Saved recall plot to {OUT_RECALL_PDF}")
+    print(f"Saved precision plot to {OUT_PRECISION_PDF}")
 
 
 if __name__ == "__main__":
