@@ -7,6 +7,7 @@ simulation seeds and saves the summary figure to confusion.selected.grid.pdf.
 """
 
 from pathlib import Path
+import csv
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -72,6 +73,40 @@ def collect_confusion(modern_ref: int, nd_ref: int) -> np.ndarray:
     return conf_sum
 
 
+
+def save_source_data(confs: dict[tuple[int, int], np.ndarray]) -> None:
+    out = Path("S7_Data_confusion_matrices.tsv")
+
+    with out.open("w", newline="") as fh:
+        writer = csv.DictWriter(
+            fh,
+            fieldnames=[
+                "modern_ref",
+                "neanderthal_ref",
+                "true_state",
+                "predicted_state",
+                "value",
+            ],
+            delimiter="\t",
+        )
+        writer.writeheader()
+
+        for nd_ref in ND_REFS:
+            for modern_ref in MODERN_REFS:
+                mat = confs[(nd_ref, modern_ref)]
+
+                for i, true_state in enumerate(STATE_ORDER):
+                    for j, predicted_state in enumerate(STATE_ORDER):
+                        writer.writerow({
+                            "modern_ref": modern_ref,
+                            "neanderthal_ref": nd_ref,
+                            "true_state": true_state,
+                            "predicted_state": predicted_state,
+                            "value": mat[i, j],
+                        })
+
+    print(f"Saved source data to {out}")
+
 def plot_grid(confs: dict[tuple[int, int], np.ndarray]) -> None:
     fig, axes = plt.subplots(len(ND_REFS), len(MODERN_REFS), figsize=(14, 13))
 
@@ -133,6 +168,7 @@ def main() -> None:
             conf = collect_confusion(modern_ref, nd_ref)
             confs[(nd_ref, modern_ref)] = row_normalize(conf)
 
+    save_source_data(confs)
     plot_grid(confs)
 
 
