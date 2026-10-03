@@ -478,6 +478,23 @@ def main():
             "recall=", rec,
         )
 
+    rows = []
+
+    for i, nd_bin in enumerate(labels):
+        for j, mod_bin in enumerate(labels):
+            rows.append({
+                "neanderthal_callability_bin": nd_bin,
+                "modern_callability_bin": mod_bin,
+                "precision": precision[i, j],
+                "recall": recall[i, j],
+            })
+
+    pd.DataFrame(rows).to_csv(
+        out_dir / "S8_Data_callability_performance.tsv",
+        sep="\t",
+        index=False,
+    )
+
     precision_min = np.nanmin(precision)
     precision_max = np.nanmax(precision)
 
