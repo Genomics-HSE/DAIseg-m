@@ -30,20 +30,6 @@ cd DAIseg.mexicans
 
 
 
-Three commands to work with 1000 GP data
-```bash
-echo "  Step 1: restrict_1kG"
-python daiseg.py restrict_1kG -json $json -threads 16 
-
-echo "  Step 2: callability"
-python daiseg.py callability -json $json -threads 16  
-
-echo "  Step 3: main.prep" 
-python daiseg.py main.prep -json $json -threads 16 
-
-```
-
-
 ### Prepared data example
 
 Preview the header and the first data row prep.chr1.grch38.tsv:
@@ -211,6 +197,20 @@ where .json is configuration file.
 ```
 
 
+
+
+Three commands to work with 1000 GP data
+```bash
+echo "  Step 1: restrict_1kG"
+python daiseg.py restrict_1kG -json $json -threads 16 
+
+echo "  Step 2: callability"
+python daiseg.py callability -json $json -threads 16  
+
+echo "  Step 3: main.prep" 
+python daiseg.py main.prep -json $json -threads 16 
+
+```
 
 
 ## Reproducible simulation analysis
