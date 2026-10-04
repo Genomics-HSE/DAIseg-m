@@ -63,11 +63,8 @@ For example:
 1       1001  A    G    A          {G}  {A}  {A}  {A}  G          A
 ```
 
-The complete example input is provided in:
+The complete example input is provided in example/input.tsv
 
-```text
-example/input.tsv
-```
 
 ### Minimal configuration
 
