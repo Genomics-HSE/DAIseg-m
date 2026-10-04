@@ -18,7 +18,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/Genomics-HSE/DAIseg-m.git
-cd DAIseg.mexicans
+cd DAIseg-m
 ```
 
 ![Demography](https://github.com/Genomics-HSE/DAIseg-m/blob/main/Mexicans.svg)
@@ -205,7 +205,7 @@ python daiseg.py main.prep -json $json -threads 16
 
 ```json
 {
-  "description": "DAIseg.mexicans configuration to run",
+  "description": "DAIseg-m configuration to run",
   "CHROM": "chr1",
   "output": "MXL.grch38.chr1",
   "prefix": "/path/to/output/MXL.grch38.v2",
@@ -354,4 +354,3 @@ Instructions for running the analysis are provided in `article.tests/README.md`.
 The real-data analysis directory contains the workflows used for the analyses of the 1000 Genomes data, including the ancestry-specific Neanderthal frequency comparison, candidate-region scans, and analyses of callability/threshold sensitivity.
 
 
-</details>
