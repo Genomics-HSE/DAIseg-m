@@ -12,11 +12,7 @@ DAIseg-m requires Python 3 and the following Python packages:
 - `numba`
 - `pysam`
 
-The preprocessing pipeline additionally requires:
 
-- `bcftools`
-- `jq`
-- `bash`
 
 Clone the repository:
 
@@ -148,6 +144,12 @@ MX_0_1   123456789  13017000 13064999 48000 AF
 ````
 
 ## Running DAIseg-m on 1000 Genomes Project data
+
+The preprocessing pipeline additionally requires:
+
+- `bcftools`
+- `jq`
+- `bash`
 
 
 
