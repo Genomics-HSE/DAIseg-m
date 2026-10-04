@@ -115,10 +115,40 @@ example/
 ├── input.tsv
 ├── callability_modern.bed
 ├── callability_neanderthal.bed
-└── expected_output.tsv
 ```
 
-`expected_output.tsv` can be used to verify that the installation and inference pipeline run correctly.
+````markdown
+### Output
+
+The output is a tab-separated file containing the inferred ancestry tracts.
+
+The columns are:
+
+```text
+Sample  CHROM  Start  End  Length  State
+```
+
+For example:
+
+```text
+Sample   CHROM      Start   End     Length   State
+MX_0_1   123456789  35000   351999  317000   EU
+MX_0_1   123456789  0       34999   35000    ND_EU
+MX_0_1   123456789  692000  836999  145000   NA
+MX_0_1   123456789  837000  952999  116000   ND_NA
+MX_0_1   123456789  13017000 13064999 48000 AF
+```
+
+`State` can take one of five values:
+
+- `EU`: European ancestry without inferred Neanderthal introgression
+- `ND_EU`: Neanderthal introgression on a European ancestry background
+- `NA`: Native American ancestry without inferred Neanderthal introgression
+- `ND_NA`: Neanderthal introgression on a Native American ancestry background
+- `AF`: African ancestry
+
+`Start` and `End` denote the genomic coordinates of the inferred tract, and `Length` gives its length in base pairs.
+````
 
 ---
 
