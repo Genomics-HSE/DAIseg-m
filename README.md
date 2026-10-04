@@ -30,6 +30,104 @@ cd DAIseg.mexicans
 
 
 
+## Quick start
+
+A minimal example is provided in the `example/` directory. It contains a small prepared TSV file, modern and Neanderthal callability files, and a configuration JSON.
+
+The example can be run directly without downloading or preprocessing 1000 Genomes Project data:
+
+```bash
+python3 daiseg.py run.with.EM \
+    -jsons example/config.json \
+    -out example/results.tsv
+```
+
+DAIseg-m estimates the model parameters using GEM and performs final Viterbi decoding. The inferred ancestry tracts are written to the output TSV.
+
+### Input TSV
+
+DAIseg-m operates on a prepared tab-separated file containing reference-panel alleles and phased target haplotypes.
+
+The required reference columns are:
+
+```text
+#CHROM  POS  REF  ALT  Ancestral  ND  EU  NA  AF
+```
+
+followed by one or more target haplotype columns.
+
+For example:
+
+```text
+#CHROM  POS   REF  ALT  Ancestral  ND   EU   NA   AF   sample1_1  sample1_2
+1       1001  A    G    A          {G}  {A}  {A}  {A}  G          A
+```
+
+The complete example input is provided in:
+
+```text
+example/input.tsv
+```
+
+### Minimal configuration
+
+A minimal configuration file specifies the prepared input, callability files, and initial model parameters.
+
+```json
+{
+  "description": "Minimal DAIseg-m example",
+  "CHROM": "chr1",
+  "output": "example_output",
+  "prefix": "example",
+  "data": "input.tsv",
+
+  "parameters_initial": {
+    "admixture_nd": 0.02,
+    "admixture_modern": [0.4, 0.5, 0.1],
+    "introgression_time": 55000,
+    "rr": 1e-08,
+    "mutation": 1.25e-08,
+    "window_length": 1000,
+    "generation_time": 29,
+    "t_n_c": 550000,
+    "t_af_c": 70000,
+    "t_introgression_c": 55000,
+    "t_ea_c": 41000,
+    "t_mexicans_c": 500,
+    "t_introgression": 55000,
+    "t_mexicans": 500
+  },
+
+  "window_callability": {
+    "Thousand_genomes": "callability_modern.bed",
+    "Nd_1k_genomes": "callability_neanderthal.bed"
+  }
+}
+```
+
+`admixture_modern` is specified in the order `[EU, NA, AF]`.
+
+The example directory contains:
+
+```text
+example/
+├── config.json
+├── input.tsv
+├── callability_modern.bed
+├── callability_neanderthal.bed
+└── expected_output.tsv
+```
+
+`expected_output.tsv` can be used to verify that the installation and inference pipeline run correctly.
+
+---
+
+## Running DAIseg-m on 1000 Genomes Project data
+
+
+
+
+
 ### Prepared data example
 
 Preview the header and the first data row prep.chr1.grch38.tsv:
@@ -56,6 +154,24 @@ nohup python3 daiseg.py run.with.EM  -json $json > daiseg.log 2>&1 &
 where .json is configuration file. 
 
 
+
+
+
+
+
+
+Three commands to work with 1000 GP data
+```bash
+echo "  Step 1: restrict_1kG"
+python daiseg.py restrict_1kG -json $json -threads 16 
+
+echo "  Step 2: callability"
+python daiseg.py callability -json $json -threads 16  
+
+echo "  Step 3: main.prep" 
+python daiseg.py main.prep -json $json -threads 16 
+
+```
 
 <details>
 <summary>Example configuration .json: DAIseg-m (GRCh38, chr1)</summary>
@@ -195,23 +311,6 @@ where .json is configuration file.
   "gaps": "/path/to/data/ref.fa/gaps.grch38/gap.txt"
 }
 ```
-
-
-
-
-Three commands to work with 1000 GP data
-```bash
-echo "  Step 1: restrict_1kG"
-python daiseg.py restrict_1kG -json $json -threads 16 
-
-echo "  Step 2: callability"
-python daiseg.py callability -json $json -threads 16  
-
-echo "  Step 3: main.prep" 
-python daiseg.py main.prep -json $json -threads 16 
-
-```
-
 
 ## Reproducible simulation analysis
 
