@@ -117,7 +117,7 @@ example/
 ├── callability_neanderthal.bed
 ```
 
-````markdown
+
 ### Output
 
 The output is a tab-separated file containing the inferred ancestry tracts.
