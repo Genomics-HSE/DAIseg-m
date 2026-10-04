@@ -171,17 +171,17 @@ def run_batch_em_pipeline(json_files_list, output_combined_file=None, max_iter=2
         obs_seq = hmm.obs.process_data(tsv_path, bed_path_1k)
         O_EU, O_NA, O_AF, O_ND, names = hmm.prepare_matrices_from_dict(obs_seq)
         chrom_id = str(data.get("CHROM", "unknown"))
-        debug_obs_path = f"/home/ailina/mx.vs.mx/obs_debug_project2_{chrom_id}.npz"
-        print("[DEBUG] saving obs to", debug_obs_path)
+        #debug_obs_path = f"/home/ailina/mx.vs.mx/obs_debug_project2_{chrom_id}.npz"
+        #print("[DEBUG] saving obs to", debug_obs_path)
 
-        np.savez_compressed(
-        debug_obs_path,
-        O_EU=O_EU,
-        O_NA=O_NA,
-        O_AF=O_AF,
-        O_ND=O_ND,
-        names=np.array(names, dtype=object),
-        )
+        #np.savez_compressed(
+        #debug_obs_path,
+        #O_EU=O_EU,
+        #O_NA=O_NA,
+        #O_AF=O_AF,
+        #O_ND=O_ND,
+        #names=np.array(names, dtype=object),
+        #)
 
         M, N = O_EU.shape
 
