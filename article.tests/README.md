@@ -63,7 +63,7 @@ Each run simulates 60 chromosomes of 50 Mb, giving 3 Gb of sequence, and evaluat
 
 1. `RFMix + HMMix`
 2. `RFMix + DAIseg.simple`
-3. `DAIseg.mexicans`
+3. `DAIseg-m`
 
 
 ## Local paths
@@ -81,7 +81,7 @@ These paths are system-specific and must be set according to your local installa
 
 `test.3.methods.sh` runs the full comparison pipeline for one simulation replicate.
 
-It first simulates the dataset, then runs RFMix, HMMix, DAIseg.simple, and DAIseg.mexicans. Combined predictions are evaluated with `evaluate_methods.py`. 
+It first simulates the dataset, then runs RFMix, HMMix, DAIseg.simple, and DAIseg-m. Combined predictions are evaluated with `evaluate_methods.py`. 
 The default simulation name is:
 
 `comparison.3.methods`
@@ -116,15 +116,15 @@ evaluate_methods.py → comparison.3.methods/metrics/{rfmix_hmmix,rfmix_daiseg_s
 ```
 
 
-# Minimal DAIseg.mexicans test run
+# Minimal DAIseg-m test run
 
 ## Goal
 
-This script runs a reduced DAIseg.mexicans test pipeline to check that simulation, inference, and evaluation work end-to-end.
+This script runs a reduced DAIseg-m test pipeline to check that simulation, inference, and evaluation work end-to-end.
 
 ## Script
 
-`simpl.sims.sh` simulates a smaller dataset, prepares DAIseg.mexicans inputs, runs DAIseg, and evaluates the prediction.
+`simpl.sims.sh` simulates a smaller dataset, prepares DAIseg-m inputs, runs DAIseg, and evaluates the prediction.
 
 By default, it simulates 20 chromosomes of 30 Mb each, giving 600 Mb of sequence.
 
