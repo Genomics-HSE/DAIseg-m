@@ -72,32 +72,31 @@ A minimal configuration file specifies the prepared input, callability files, an
 
 ```json
 {
-  "description": "Minimal DAIseg-m example",
-  "CHROM": "chr1",
-  "output": "example_output",
-  "prefix": "example",
   "data": "input.tsv",
-
+  "description": "Minimal DAIseg-m example",
+  "CHROM": "123456789",
+  "prefix": "example",
+  "output": "example_output",
+  "gaps": "gaps.txt",
+  "window_callability": {
+    "Thousand_genomes": "callability_modern.bed",
+    "Nd_1k_genomes": "callability_neanderthal.bed"
+  },
   "parameters_initial": {
-    "admixture_nd": 0.02,
-    "admixture_modern": [0.4, 0.5, 0.1],
+    "admixture_nd": 0.025,
+    "admixture_modern": [0.5, 0.4, 0.1],
     "introgression_time": 55000,
     "rr": 1e-08,
     "mutation": 1.25e-08,
     "window_length": 1000,
     "generation_time": 29,
     "t_n_c": 550000,
-    "t_af_c": 70000,
+    "t_af_c": 65700,
     "t_introgression_c": 55000,
-    "t_ea_c": 41000,
-    "t_mexicans_c": 500,
+    "t_ea_c": 41997,
+    "t_mexicans_c": 466,
     "t_introgression": 55000,
-    "t_mexicans": 500
-  },
-
-  "window_callability": {
-    "Thousand_genomes": "callability_modern.bed",
-    "Nd_1k_genomes": "callability_neanderthal.bed"
+    "t_mexicans": 466
   }
 }
 ```
