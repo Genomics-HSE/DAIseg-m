@@ -17,11 +17,11 @@ DAIseg-m requires Python 3 and the following Python packages:
 Clone the repository:
 
 ```bash
-git clone https://github.com/Genomics-HSE/DAIseg.mexicans.git
+git clone https://github.com/Genomics-HSE/DAIseg-m.git
 cd DAIseg.mexicans
 ```
 
-![Demography](https://github.com/Genomics-HSE/DAIseg.mexicans/blob/main/Mexicans.svg)
+![Demography](https://github.com/Genomics-HSE/DAIseg-m/blob/main/Mexicans.svg)
 
 
 
