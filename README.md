@@ -12,6 +12,9 @@ DAIseg-m requires Python 3 and the following Python packages:
 - `numba`
 - `pysam`
 
+```bash
+pip install numpy pandas scipy numba pysam
+```
 
 
 Clone the repository:
