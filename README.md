@@ -111,6 +111,7 @@ example/
 ├── input.tsv
 ├── callability_modern.bed
 ├── callability_neanderthal.bed
+├── gaps.txt
 ```
 
 
