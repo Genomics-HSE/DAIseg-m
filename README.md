@@ -141,7 +141,7 @@ MX_0_1   123456789  13017000 13064999 48000 AF
 - `AF`: African ancestry
 
 `Start` and `End` denote the genomic coordinates of the inferred tract, and `Length` gives its length in base pairs.
-````
+
 
 ## Running DAIseg-m on 1000 Genomes Project data
 
@@ -338,6 +338,7 @@ python daiseg.py main.prep -json $json -threads 16
   "gaps": "/path/to/data/ref.fa/gaps.grch38/gap.txt"
 }
 ```
+</details>
 
 ## Reproducible simulation analysis
 
