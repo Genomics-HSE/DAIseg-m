@@ -25,8 +25,7 @@ WINDOW = 1000
 MIN_EU_HAPS = 10
 MIN_ND_TRACT = 0  # no archaic-tract length filter for truth-level calibration
 
-# Reuse previously generated simulations/truth tables whenever possible.
-# Priority: ground_truth_5state_all.tsv -> per-seed ground_truth_5state_*.tsv -> sim_seed_*.trees -> new msprime simulation.
+
 REUSE_EXISTING_TRUTH = True
 REUSE_EXISTING_TREES = True
 SAVE_TREES = False
