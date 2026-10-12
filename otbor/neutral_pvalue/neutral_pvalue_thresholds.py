@@ -1,32 +1,3 @@
-#!/usr/bin/env python3
-"""
-
-Use neutral simulations to choose empirical p-value thresholds for the real
-MXL-vs-IBS scan.
-
-The script reads neutral_effects_by_window.tsv produced by the neutral
-truth-level simulation pipeline and recomputes the same directional binomial
-p-values used in the real scan:
-
-    excess:    P[X >= k_MX]
-    depletion: P[X <= k_MX]
-
-where
-
-    X ~ Binomial(N_MX_EUbg, p_IBS)
-
-Then it writes empirical lower-tail quantiles of these p-values. These
-quantiles can be used as simulation-calibrated p-value cutoffs.
-
-Default calibration:
-    excess:    use windows with p_IBS > 0
-    depletion: use windows with p_IBS > 0
-
-This avoids non-informative/degenerate cases where p_IBS = 0.
-
-
-"""
-
 import argparse
 import glob
 from pathlib import Path
